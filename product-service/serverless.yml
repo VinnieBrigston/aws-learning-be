@@ -1,0 +1,25 @@
+service: product-service
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: eu-west-1
+  profile: awsLearning
+  httpApi:
+    cors: true
+
+
+functions:
+  getProducts:
+    handler: handlers/getProducts.getProductsHandler
+    events:
+      - httpApi:
+          path: /products
+          method: get
+  getProductById:
+    handler: handlers/getProductById.getProductByIdHandler
+    events:
+      - httpApi:
+          path: /product/{id}
+          method: get
