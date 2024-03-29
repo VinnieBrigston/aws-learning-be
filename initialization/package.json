@@ -1,0 +1,14 @@
+{
+  "name": "aws_db_initialization",
+  "version": "1.0.0",
+  "description": "Script for filling DB witn initial data",
+  "main": "init_db.js",
+  "scripts": {
+    "init-db": "node init_db.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.1587.0"
+  }
+}
