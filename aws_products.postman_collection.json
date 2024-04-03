@@ -1,0 +1,86 @@
+{
+	"info": {
+		"_postman_id": "4ee2e06a-c5e0-4572-b47c-9cd816853d7d",
+		"name": "aws_products",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "4785241"
+	},
+	"item": [
+		{
+			"name": "get all products",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://wlyubey7ji.execute-api.eu-west-1.amazonaws.com/products",
+					"protocol": "https",
+					"host": [
+						"wlyubey7ji",
+						"execute-api",
+						"eu-west-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get product by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://wlyubey7ji.execute-api.eu-west-1.amazonaws.com/product/7567ec4b-b10c-48c5-9345-fc73c48a80aa",
+					"protocol": "https",
+					"host": [
+						"wlyubey7ji",
+						"execute-api",
+						"eu-west-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"product",
+						"7567ec4b-b10c-48c5-9345-fc73c48a80aa"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create product",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"Absolutely new book\",\r\n    \"description\": \"Absolutely new description\",\r\n    \"price\": 45.33\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://wlyubey7ji.execute-api.eu-west-1.amazonaws.com/products",
+					"protocol": "https",
+					"host": [
+						"wlyubey7ji",
+						"execute-api",
+						"eu-west-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"products"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

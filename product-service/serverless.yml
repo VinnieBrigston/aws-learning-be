@@ -8,7 +8,18 @@ provider:
   profile: awsLearning
   httpApi:
     cors: true
-
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:CreateTable
+      Resource: '*'
 
 functions:
   getProducts:
@@ -23,3 +34,9 @@ functions:
       - httpApi:
           path: /product/{id}
           method: get
+  createProduct:
+    handler: handlers/createProduct.createProductHandler
+    events:
+      - httpApi:
+          path: /products
+          method: post
