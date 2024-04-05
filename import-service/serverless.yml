@@ -1,0 +1,37 @@
+service: import-service
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: eu-west-1
+  profile: awsLearning
+  httpApi:
+    cors: true
+  iamRoleStatements:
+    - Effect: Allow
+      Action: "s3:ListBucket"
+      Resource:
+        - "arn:aws:s3:::aws-js-learning-import-csv"
+    - Effect: Allow
+      Action:
+        - "s3:*"
+      Resource:
+        - "arn:aws:s3:::aws-js-learning-import-csv/*"
+
+functions:
+  importProductsFile:
+    handler: handlers/importProductsFile.importProductsFileHandler
+    events:
+      - httpApi:
+          path: /import
+          method: get
+  importFileParser:
+    handler: handlers/importFileParser.importFileParserHandler
+    events:
+      - s3:
+          bucket: aws-js-learning-import-csv
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploaded/
+          existing: true
