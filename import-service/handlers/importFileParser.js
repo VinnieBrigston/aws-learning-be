@@ -1,5 +1,6 @@
 const csv = require('csv-parser');
 const AWS = require('aws-sdk');
+const { finished } = require("node:stream/promises");
 const s3 = new AWS.S3();
 
 module.exports.importFileParserHandler = async (event) => {
@@ -13,7 +14,8 @@ module.exports.importFileParserHandler = async (event) => {
 
   try {
     const s3Stream = s3.getObject(params).createReadStream();
-    s3Stream.pipe(csv())
+    await finished(
+      s3Stream.pipe(csv())
       .on('data', (data) => {
         console.log(data);
       })
@@ -22,8 +24,9 @@ module.exports.importFileParserHandler = async (event) => {
       })
       .on('error', (error) => {
         console.error('Error processing CSV:', error);
-      });
-
+      })
+    )
+    
   } catch (error) {
     console.error('Error processing CSV:', error);
     throw error;
