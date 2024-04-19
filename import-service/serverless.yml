@@ -18,6 +18,12 @@ provider:
         - "s3:*"
       Resource:
         - "arn:aws:s3:::aws-js-learning-import-csv/*"
+    - Effect: Allow
+      Action:
+        - "sqs:SendMessage"
+        - "sqs:SendMessageBatch"
+        - "sqs:GetQueueUrl" 
+      Resource: '*'
 
 functions:
   importProductsFile:

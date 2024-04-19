@@ -8,6 +8,9 @@ provider:
   profile: awsLearning
   httpApi:
     cors: true
+  environment:
+    SQS_URL:
+      Ref: catalogItemsQueue
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -19,7 +22,37 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
         - dynamodb:CreateTable
+        - sqs:ReceiveMessage
+        - sns:Publish
       Resource: '*'
+
+resources:
+  Resources:
+    catalogItemsQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: catalogItemsQueue
+    createProductTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: createProductTopic
+    createProductTopicSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: email
+        TopicArn:
+          Ref: createProductTopic
+        Endpoint: theodoreksts@gmail.com
+    createProductTopicSubscriptionFiltered:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: email
+        TopicArn:
+          Ref: createProductTopic
+        Endpoint: vinniebrixton@gmail.com
+        FilterPolicy:
+          title:
+            - 'Laptop'
 
 functions:
   getProducts:
@@ -40,3 +73,10 @@ functions:
       - httpApi:
           path: /products
           method: post
+  catalogBatchProcess:
+    handler: handlers/catalogBatchProcess.catalogBatchProcessHandler
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt: [ catalogItemsQueue, Arn ]
+          batchSize: 5
