@@ -1,4 +1,8 @@
 /initialization/node_modules
 /product-service/node_modules
+/authorization-service/node_modules
+/authorization-service/.serverless
+/authorization-service/.env
 /import-service/node_modules
+/import-service/.env
 /node_modules

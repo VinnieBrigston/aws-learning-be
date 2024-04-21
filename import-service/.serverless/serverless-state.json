@@ -9,8 +9,17 @@
       "runtime": "nodejs18.x",
       "region": "eu-west-1",
       "profile": "awsLearning",
+      "environment": {
+        "ACCOUNT_ID": "992382618752"
+      },
       "httpApi": {
-        "cors": true
+        "cors": true,
+        "authorizers": {
+          "basicAuthorizer": {
+            "type": "request",
+            "functionArn": "arn:aws:lambda:eu-west-1:992382618752:function:authorization-service-dev-basicAuthorizer"
+          }
+        }
       },
       "iamRoleStatements": [
         {
@@ -35,6 +44,13 @@
             "sqs:GetQueueUrl"
           ],
           "Resource": "*"
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "lambda:InvokeFunction"
+          ],
+          "Resource": "arn:aws:lambda:eu-west-1:992382618752:function:authorization-service-dev-basicAuthorizer"
         }
       ],
       "stage": "dev",
@@ -190,6 +206,9 @@
                       },
                       {
                         "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][2]"
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][3]"
                       }
                     ]
                   }
@@ -218,13 +237,18 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/import-service/dev/1712929539533-2024-04-12T13:45:39.533Z/import-service.zip"
+                "S3Key": "serverless/import-service/dev/1713687798405-2024-04-21T08:23:18.405Z/import-service.zip"
               },
               "Handler": "handlers/importProductsFile.importProductsFileHandler",
               "Runtime": "nodejs18.x",
               "FunctionName": "import-service-dev-importProductsFile",
               "MemorySize": 1024,
               "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "ACCOUNT_ID": "992382618752"
+                }
+              },
               "Role": {
                 "Fn::GetAtt": [
                   "IamRoleLambdaExecution",
@@ -243,13 +267,18 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/import-service/dev/1712929539533-2024-04-12T13:45:39.533Z/import-service.zip"
+                "S3Key": "serverless/import-service/dev/1713687798405-2024-04-21T08:23:18.405Z/import-service.zip"
               },
               "Handler": "handlers/importFileParser.importFileParserHandler",
               "Runtime": "nodejs18.x",
               "FunctionName": "import-service-dev-importFileParser",
               "MemorySize": 1024,
               "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "ACCOUNT_ID": "992382618752"
+                }
+              },
               "Role": {
                 "Fn::GetAtt": [
                   "IamRoleLambdaExecution",
@@ -261,7 +290,7 @@
               "ImportFileParserLogGroup"
             ]
           },
-          "ImportProductsFileLambdaVersionrbgyB0GZhLzmdYqO6jvssfe2FAL50Imr3K1jmHcQ4": {
+          "ImportProductsFileLambdaVersionPbkBYVDFpChmQyHvC5pK6Az8xZ2hdkfWrFAkfAY0": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
@@ -271,7 +300,7 @@
               "CodeSha256": "ZYIYiRFFqVY6Nf+dVOqjJtKGFxGvGEL7tmQZNd6eYLE="
             }
           },
-          "ImportFileParserLambdaVersionOrpOVUbJ4pSbDcmWoqjAMYBxSfeOIEaOXOIAxyFs": {
+          "ImportFileParserLambdaVersionx8UgBYqUo2zuQAFynNPuQiAONzFQt8XxGHzWaeIWsiY": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
@@ -405,7 +434,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/import-service/dev/1712929539533-2024-04-12T13:45:39.533Z/custom-resources.zip"
+                "S3Key": "serverless/import-service/dev/1713687798405-2024-04-21T08:23:18.405Z/custom-resources.zip"
               },
               "FunctionName": "import-service-dev-custom-resource-existing-s3",
               "Handler": "s3/handler.handler",
@@ -458,6 +487,68 @@
               "AutoDeploy": true,
               "DefaultRouteSettings": {
                 "DetailedMetricsEnabled": false
+              }
+            }
+          },
+          "BasicAuthorizerLambdaAuthorizerPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": "arn:aws:lambda:eu-west-1:992382618752:function:authorization-service-dev-basicAuthorizer",
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiAuthorizerBasicAuthorizer": {
+            "Type": "AWS::ApiGatewayV2::Authorizer",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "Name": "basicAuthorizer",
+              "IdentitySource": [],
+              "AuthorizerType": "REQUEST",
+              "AuthorizerPayloadFormatVersion": "2.0",
+              "AuthorizerUri": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":apigateway:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":lambda:path/2015-03-31/functions/",
+                    "arn:aws:lambda:eu-west-1:992382618752:function:authorization-service-dev-basicAuthorizer",
+                    "/invocations"
+                  ]
+                ]
               }
             }
           },
@@ -529,6 +620,10 @@
                     }
                   ]
                 ]
+              },
+              "AuthorizationType": "CUSTOM",
+              "AuthorizerId": {
+                "Ref": "HttpApiAuthorizerBasicAuthorizer"
               }
             },
             "DependsOn": "HttpApiIntegrationImportProductsFile"
@@ -546,7 +641,7 @@
           "ImportProductsFileLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ImportProductsFileLambdaVersionrbgyB0GZhLzmdYqO6jvssfe2FAL50Imr3K1jmHcQ4"
+              "Ref": "ImportProductsFileLambdaVersionPbkBYVDFpChmQyHvC5pK6Az8xZ2hdkfWrFAkfAY0"
             },
             "Export": {
               "Name": "sls-import-service-dev-ImportProductsFileLambdaFunctionQualifiedArn"
@@ -555,7 +650,7 @@
           "ImportFileParserLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ImportFileParserLambdaVersionOrpOVUbJ4pSbDcmWoqjAMYBxSfeOIEaOXOIAxyFs"
+              "Ref": "ImportFileParserLambdaVersionx8UgBYqUo2zuQAFynNPuQiAONzFQt8XxGHzWaeIWsiY"
             },
             "Export": {
               "Name": "sls-import-service-dev-ImportFileParserLambdaFunctionQualifiedArn"
@@ -689,7 +784,10 @@
           {
             "httpApi": {
               "path": "/import",
-              "method": "get"
+              "method": "get",
+              "authorizer": {
+                "name": "basicAuthorizer"
+              }
             },
             "resolvedMethod": "GET",
             "resolvedPath": "/import"
@@ -701,7 +799,7 @@
         "timeout": 6,
         "runtime": "nodejs18.x",
         "vpc": {},
-        "versionLogicalId": "ImportProductsFileLambdaVersionrbgyB0GZhLzmdYqO6jvssfe2FAL50Imr3K1jmHcQ4"
+        "versionLogicalId": "ImportProductsFileLambdaVersionPbkBYVDFpChmQyHvC5pK6Az8xZ2hdkfWrFAkfAY0"
       },
       "importFileParser": {
         "handler": "handlers/importFileParser.importFileParserHandler",
@@ -725,7 +823,7 @@
         "timeout": 6,
         "runtime": "nodejs18.x",
         "vpc": {},
-        "versionLogicalId": "ImportFileParserLambdaVersionOrpOVUbJ4pSbDcmWoqjAMYBxSfeOIEaOXOIAxyFs"
+        "versionLogicalId": "ImportFileParserLambdaVersionx8UgBYqUo2zuQAFynNPuQiAONzFQt8XxGHzWaeIWsiY"
       }
     },
     "configValidationMode": "warn",
@@ -733,6 +831,7 @@
     "initialServerlessConfig": {
       "service": "import-service",
       "frameworkVersion": "3",
+      "useDotenv": true,
       "provider": {
         "$ref": "$[\"service\"][\"provider\"]"
       },
@@ -745,7 +844,7 @@
     "artifact": "C:\\Study\\aws-learning-be\\import-service\\.serverless\\import-service.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/import-service/dev/1712929539533-2024-04-12T13:45:39.533Z",
+    "artifactDirectoryName": "serverless/import-service/dev/1713687798405-2024-04-21T08:23:18.405Z",
     "artifact": "import-service.zip"
   }
 }
