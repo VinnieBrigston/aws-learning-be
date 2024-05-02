@@ -1,0 +1,23 @@
+service: authorization-service
+frameworkVersion: '3'
+useDotenv: true
+
+plugins:
+  - serverless-dotenv-plugin
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: eu-west-1
+  profile: awsLearning
+  iamRoleStatements:  
+    - Effect: Allow
+      Action:
+        - "execute-api:Invoke"
+      Resource: "*"
+  environment:
+    GITHUB_ACCOUNT_LOGIN: ${env:GITHUB_ACCOUNT_LOGIN}
+
+functions:
+  basicAuthorizer:
+    handler: handlers/basicAuthorizer.basicAuthorizerHandler

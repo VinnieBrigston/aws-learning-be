@@ -1,13 +1,21 @@
 service: import-service
 frameworkVersion: '3'
+useDotenv: true
 
 provider:
   name: aws
   runtime: nodejs18.x
   region: eu-west-1
   profile: awsLearning
+  environment:
+    ACCOUNT_ID: ${env:ACCOUNT_ID}
   httpApi:
     cors: true
+    authorizers:
+      basicAuthorizer:
+        type: request
+        functionArn: arn:aws:lambda:eu-west-1:${env:ACCOUNT_ID}:function:authorization-service-dev-basicAuthorizer
+
   iamRoleStatements:
     - Effect: Allow
       Action: "s3:ListBucket"
@@ -24,6 +32,11 @@ provider:
         - "sqs:SendMessageBatch"
         - "sqs:GetQueueUrl" 
       Resource: '*'
+    - Effect: Allow
+      Action:
+        - "lambda:InvokeFunction"
+      Resource: 
+        - "arn:aws:lambda:eu-west-1:${env:ACCOUNT_ID}:function:authorization-service-dev-basicAuthorizer"
 
 functions:
   importProductsFile:
@@ -32,6 +45,8 @@ functions:
       - httpApi:
           path: /import
           method: get
+          authorizer:
+            name: basicAuthorizer
   importFileParser:
     handler: handlers/importFileParser.importFileParserHandler
     events:
